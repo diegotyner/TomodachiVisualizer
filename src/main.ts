@@ -1,60 +1,44 @@
-import './style.css'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.ts'
+import "./index.css";
+import * as d3 from "d3";
+import testData from "./data/testData";
+import { buildEdgeData, drawEdges, updateEdgePaths } from "./graph/edges";
+import { drawNodes } from "./graph/nodes";
+import { createSimulation } from "./graph/simulation";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+const width = window.innerWidth;
+const height = window.innerHeight;
 
-<div class="ticks"></div>
+const svg = d3
+  .select("#app")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height)
+  .style("cursor", "grab");
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+const container = svg.append("g").attr("id", "container");
+const zoom = d3
+  .zoom<SVGSVGElement, unknown>()
+  .scaleExtent([0.2, 4]) // min 20% zoom, max 400%
+  .on("zoom", (event) => {
+    container.attr("transform", event.transform);
+  });
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+svg.call(zoom);
+svg
+  .on("mousedown", () => svg.style("cursor", "grabbing"))
+  .on("mouseup", () => svg.style("cursor", "grab"));
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const edgeData = buildEdgeData(testData.edges);
+const simulation = createSimulation(testData.nodes, edgeData, width, height);
+const edges = drawEdges(container as any, edgeData); // edges drawn first = behind nodes
+const nodes = drawNodes(
+  container as any,
+  testData.nodes,
+  simulation,
+  testData.edges,
+);
+
+simulation.on("tick", () => {
+  updateEdgePaths(edges as any);
+  nodes.attr("transform", (d: any) => `translate(${d.x}, ${d.y})`);
+});
