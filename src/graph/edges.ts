@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import type { Relationship } from "../types/types";
 
+const EDGE_MULTIPLIER = 1.5;
+
 export const EDGE_COLORS: Record<string, string | null> = {
   married: "#ffb3c6",
   family: "#ffb3c6",
@@ -53,8 +55,14 @@ export const drawEdges = (
     .join("path")
     .attr("fill", "none")
     .attr("stroke", (d) => EDGE_COLORS[d.type] ?? "none")
-    .attr("stroke-width", (d) => (d.type === "crush" ? 2.5 : 1.5))
-    .attr("stroke-opacity", (d) => (d.type === "stranger" ? 0 : 0.8))
+    .attr(
+      "stroke-width",
+      (d) => EDGE_MULTIPLIER * (d.type === "crush" ? 2.5 : 1.5),
+    )
+    .attr(
+      "stroke-opacity",
+      (d) => EDGE_MULTIPLIER * (d.type === "stranger" ? 0 : 0.8),
+    )
     .attr("marker-end", (d) =>
       d.type === "stranger" ? null : `url(#arrow-${d.type})`,
     );
