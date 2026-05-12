@@ -2,10 +2,16 @@ import * as d3 from "d3";
 import type { Relationship } from "../types/types";
 
 export const EDGE_COLORS: Record<string, string | null> = {
+  married: "#ffb3c6",
+  family: "#ffb3c6",
+  siblings: "#ffb3c6",
+  sweetheart: "#ffb3c6",
   crush: "#ffb3c6",
-  ultra_friend: "#ffd700",
-  good_friend: "#b7e1cd",
-  indifferent: "#b4a7d6",
+  best_friend: "#ffd700",
+  friend: "#b7e1cd",
+  acquaintance: "#b4a7d6",
+  ex_sweethearts: "#341539",
+  ex_friends: "#341539",
   stranger: null,
 };
 

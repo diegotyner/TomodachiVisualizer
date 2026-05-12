@@ -6,10 +6,16 @@ export interface Islander {
 }
 
 export type RelationshipType =
+  | "married"
+  | "family"
+  | "siblings"
+  | "sweetheart"
   | "crush"
-  | "ultra_friend"
-  | "good_friend"
-  | "indifferent"
+  | "best_friend"
+  | "friend"
+  | "acquaintance"
+  | "ex_sweethearts"
+  | "ex_friends"
   | "stranger";
 
 export interface Relationship {
