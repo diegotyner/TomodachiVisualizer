@@ -4,6 +4,7 @@ import testData from "./data/testData";
 import { buildEdgeData, drawEdges, updateEdgePaths } from "./graph/edges";
 import { drawNodes } from "./graph/nodes";
 import { createSimulation } from "./graph/simulation";
+import { initLegend } from "./graph/legend";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -27,6 +28,8 @@ svg.call(zoom);
 svg
   .on("mousedown", () => svg.style("cursor", "grabbing"))
   .on("mouseup", () => svg.style("cursor", "grab"));
+
+initLegend();
 
 const edgeData = buildEdgeData(testData.edges);
 const simulation = createSimulation(testData.nodes, edgeData, width, height);
